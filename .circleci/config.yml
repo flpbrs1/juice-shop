@@ -31,7 +31,11 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - browser-tools/install-browser-tools
+      - run:
+        name: Install Firefox manually
+        command: |
+          sudo apt update
+          sudo apt install -y firefox
       - run: ls -la
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
