@@ -39,7 +39,6 @@ jobs:
       - run: ls -la
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
-      - run: npm ci
       - run:
           name: Run frontend tests
           command: |
