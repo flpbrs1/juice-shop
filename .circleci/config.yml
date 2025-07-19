@@ -39,6 +39,11 @@ jobs:
       - run: ls -la
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
+      - run: npm ci
+      - run:
+          name: Run frontend tests
+          command: |
+            export CHROME_BIN=$(which google-chrome)
       - run: npm run test
 
 
