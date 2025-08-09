@@ -27,6 +27,8 @@ jobs:
 
     docker:
       - image: cimg/node:20.10-browsers
+    environment:
+      CHROME_BIN: /usr/bin/google-chrome-stable
 
     steps:
       - attach_workspace:
@@ -34,14 +36,8 @@ jobs:
       - run: ls -la
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
+      - run: npm run test
 
-    # Definir CHROME_BIN para Karma
-      - run:
-          name: Set CHROME_BIN
-          command: |
-            export CHROME_BIN=$(which google-chrome)
-            echo "CHROME_BIN set to $CHROME_BIN"
-            npm run test
 
 
 
@@ -57,7 +53,7 @@ jobs:
 
       - setup_remote_docker:
           version: 20.10.18
-          
+
       - attach_workspace:
           at: .
 
