@@ -6,14 +6,14 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.4
 
 jobs:
-  
+
   build:
 
     docker:
       - image: cimg/node:19.6.1
 
     steps:
-      - checkout 
+      - checkout
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
       - run: npm install
@@ -31,18 +31,10 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: Install Firefox manually
-          command: |
-            sudo apt update
-            sudo apt install -y firefox
+      - browser-tools/install-browser-tools
       - run: ls -la
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
-      - run:
-          name: Run frontend tests
-          command: |
-            export CHROME_BIN=$(which google-chrome)
       - run: npm run test
 
 
