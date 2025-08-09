@@ -31,11 +31,10 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: export CHROME_BIN=$(which google-chrome)
       - run: ls -la
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
-      - run: npm run test
+      - run: export CHROME_BIN=$(which google-chrome) && npm run test
 
 
   deploy:
