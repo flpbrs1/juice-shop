@@ -1,5 +1,5 @@
 # Versão do Circle CI config file
-version: 2.2
+version: 2.1
 
 orbs:
   browser-tools: circleci/browser-tools@1.1.0
