@@ -34,7 +34,15 @@ jobs:
       - run: ls -la
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
-      - run: export CHROME_BIN=$(which google-chrome) && npm run test
+
+    # Definir CHROME_BIN para Karma
+      - run:
+          name: Set CHROME_BIN
+          command: |
+            export CHROME_BIN=$(which google-chrome)
+            echo "CHROME_BIN set to $CHROME_BIN"
+            npm run test
+
 
 
   deploy:
