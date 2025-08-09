@@ -27,13 +27,14 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromiumHeadless'],
+    browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
-      ChromiumHeadless: {
-        base: 'ChromiumHeadless',
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadlessNoSandbox',
         flags: [
           '--no-sandbox',
-          '--disable-gpu'
+          '--disable-gpu',
+	  '--disable-dev-shm-usage'
         ]
       }
     },
