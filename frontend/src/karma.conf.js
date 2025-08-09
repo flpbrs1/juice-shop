@@ -1,11 +1,4 @@
-/*
- * Copyright (c) 2014-2025 Bjoern Kimminich & the OWASP Juice Shop contributors.
- * SPDX-License-Identifier: MIT
- */
-
-// Karma configuration file, see link for more information
-// https://karma-runner.github.io/1.0/config/configuration-file.html
-
+// frontend/karma.conf.js
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -18,14 +11,15 @@ module.exports = function (config) {
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
-      clearContext: false // leave Jasmine Spec Runner output visible in browser
+      jasmine: {},
+      clearContext: false // deixa o output do Jasmine visível no browser
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, '../../build/reports/coverage/frontend-tests'),
+      dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
         { type: 'html' },
-        { type: 'lcovonly' }
+        { type: 'text-summary' }
       ]
     },
     reporters: ['progress', 'kjhtml'],
@@ -33,8 +27,19 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['ChromeHeadless'],
-    singleRun: false,
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    singleRun: true,
     restartOnFileChange: true
-  })
-}
+  });
+};
