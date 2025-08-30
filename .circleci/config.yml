@@ -1,31 +1,84 @@
+# Versão do Circle CI config file
 version: 2.1
 
+orbs:
+  browser-tools: circleci/browser-tools@1.1.0
+  aws-cli: circleci/aws-cli@3.1.4
+
 jobs:
+
   build:
+
     docker:
-      - image: cimg/node:18.20  # versão estável do Node LTS
-    working_directory: ~/repo
+      - image: cimg/node:18.20
 
     steps:
-      - checkout
+      - checkout 
+      - run: sudo npm install -g @angular/cli
+      - run: sudo npm install -g grunt-cli
+      - run: npm install
+      - run: ls -la
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./*
 
-      - run:
-          name: Install dependencies
-          command: |
-            npm install --legacy-peer-deps
+  test:
 
-      - run:
-          name: Build frontend
-          command: |
-            npm run build
+    docker:
+      - image: cimg/node:18.20-browsers
 
+    steps:
+      - attach_workspace:
+          at: .
+      - browser-tools/install-browser-tools
+      - run: ls -la
+      - run: sudo npm install -g @angular/cli
+      - run: sudo npm install -g grunt-cli
+      - run: npm run test
+
+
+  deploy:
+
+    docker:
+      - image: cimg/base:2022.09
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+
+    steps:
+
+      - setup_remote_docker:
+          version: 20.10.18
+ 
+      - attach_workspace:
+          at: .
+
+      - aws-cli/setup:
+          profile-name: example
+
+      # Comandos para buildar a imagem docker e publicar no Docker HUB
+      - run: docker build -t $DOCKERHUB_USERNAME/juice-shop-app:$CIRCLE_SHA1 -t $DOCKERHUB_USERNAME/juice-shop-app:latest ./ # Caminho de onde o Dockerfile é carregado
+      - run: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run: docker push $DOCKERHUB_USERNAME/juice-shop-app:$CIRCLE_SHA1
+      - run: docker push $DOCKERHUB_USERNAME/juice-shop-app:latest
+
+      # Comandos para fazer o autalizar o ambiente no Elastic Beanstalk toda vez que uma nova imagem é publicada no docker hub
       - run:
-          name: Run tests
+          name: Deploy to Elastic Beanstalk
           command: |
-            npm test
+            aws configure set region us-east-1
+            aws s3 cp app-conf.json s3://juice-shop-mvc
+            aws elasticbeanstalk create-application-version --application-name juice-shop --version-label $CIRCLE_SHA1 --source-bundle S3Bucket="juice-shop-mvc",S3Key="app-conf.json"
+            aws elasticbeanstalk update-environment --environment-name juice-shop-1 --version-label $CIRCLE_SHA1
 
 workflows:
-  version: 2
-  build_and_test:
+  build_test_deploy:
     jobs:
       - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
