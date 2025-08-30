@@ -1,99 +1,31 @@
-# Versão do Circle CI config file
 version: 2.1
 
-orbs:
-  browser-tools: circleci/browser-tools@1.1.0
-  aws-cli: circleci/aws-cli@3.1.4
-
 jobs:
-
   build:
-
     docker:
-      - image: cimg/node:20.10
+      - image: cimg/node:18.20  # versão estável do Node LTS
+    working_directory: ~/repo
 
     steps:
       - checkout
-      - run: sudo npm install -g @angular/cli
-      - run: sudo npm install -g grunt-cli
-      - run: npm install
-      - run: ls -la
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./*
 
-  test:
-
-    docker:
-      - image: cimg/node:20.10-browsers
-
-    steps:
-      - attach_workspace:
-          at: .
-      - run: ls -la
-      - run: sudo npm install -g @angular/cli
-      - run: sudo npm install -g grunt-cli
-
-    # Garantir que o Chrome está instalado
       - run:
-          name: Install Google Chrome
+          name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get install -y chromium-browser
-            export CHROME_BIN=$(which chromium-browser)
+            npm ci
 
-    # Rodar os testes do frontend e do server
       - run:
-          name: Run Tests
+          name: Build frontend
           command: |
-            cd frontend
-            npm run test -- --watch=false --source-map=true
-            cd ..
-            npm run test:server
+            npm run build
 
-
-  deploy:
-
-    docker:
-      - image: cimg/base:2022.09
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
-
-    steps:
-
-      - setup_remote_docker:
-          version: 20.10.18
-
-      - attach_workspace:
-          at: .
-
-      - aws-cli/setup:
-          profile-name: example
-
-      # Comandos para buildar a imagem docker e publicar no Docker HUB
-      - run: docker build -t $DOCKERHUB_USERNAME/juice-shop-app:$CIRCLE_SHA1 -t $DOCKERHUB_USERNAME/juice-shop-app:latest ./ # Caminho de onde o Dockerfile é carregado
-      - run: echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-      - run: docker push $DOCKERHUB_USERNAME/juice-shop-app:$CIRCLE_SHA1
-      - run: docker push $DOCKERHUB_USERNAME/juice-shop-app:latest
-
-      # Comandos para fazer o autalizar o ambiente no Elastic Beanstalk toda vez que uma nova imagem é publicada no docker hub
       - run:
-          name: Deploy to Elastic Beanstalk
+          name: Run tests
           command: |
-            aws configure set region us-east-1
-            aws s3 cp app-conf.json s3://juice-shop-env-prod-devsecops
-            aws elasticbeanstalk create-application-version --application-name juice-shop --version-label $CIRCLE_SHA1 --source-bundle S3Bucket="juice-shop-env-prod-devsecops",S3Key="app-conf.json"
-            aws elasticbeanstalk update-environment --environment-name juice-shop-1 --version-label $CIRCLE_SHA1
+            npm test
 
 workflows:
-  build_test_deploy:
+  version: 2
+  build_and_test:
     jobs:
       - build
-      - test:
-          requires:
-            - build
-      - deploy:
-          requires:
-            - test
