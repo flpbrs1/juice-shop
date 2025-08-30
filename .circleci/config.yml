@@ -13,10 +13,10 @@ jobs:
       - image: cimg/node:19.6.1
 
     steps:
-      - checkout 
+      - checkout
       - run: sudo npm install -g @angular/cli
       - run: sudo npm install -g grunt-cli
-      - run: npm install
+      - run: npm install --legacy-peer-deps
       - run: ls -la
       - persist_to_workspace:
           root: .
@@ -27,15 +27,26 @@ jobs:
 
     docker:
       - image: cimg/node:19.6.1-browsers
+    working_directory: ~/repo
 
     steps:
       - attach_workspace:
           at: .
       - browser-tools/install-browser-tools
       - run: ls -la
-      - run: sudo npm install -g @angular/cli
-      - run: sudo npm install -g grunt-cli
-      - run: npm run test
+      - run: ls -la
+      # Testes unitários (Karma) no ChromeHeadless
+      - run:
+          name: Rodar testes unitários
+          command: |
+            cd frontend
+            npm install --legacy-peer-deps
+            npm test -- --watch=false --browsers ChromeHeadless
+
+      # Testes end-to-end (Protractor) no ChromeHeadless
+      - run:
+          name: Rodar testes E2E
+          command: npm run e2e -- --capabilities.browserName=chrome --headless
 
 
   deploy:
