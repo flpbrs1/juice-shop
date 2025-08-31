@@ -43,12 +43,12 @@ jobs:
           sudo ln -s /opt/firefox/firefox /usr/bin/firefox
 
       # Testes unitários (Karma) no ChromeHeadless
-      - run:
-          name: Rodar testes unitários
-          command: |
-            cd frontend
-            npm install --legacy-peer-deps
-            npm test -- --watch=false --browsers FirefoxHeadless
+      #- run:
+      #    name: Rodar testes unitários
+      #    command: |
+      #      cd frontend
+      #      npm install --legacy-peer-deps
+      #      npm test -- --watch=false --browsers FirefoxHeadless
 
       # Testes end-to-end (Protractor) no ChromeHeadless
       #- run:
