@@ -32,10 +32,16 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - browser-tools/install-browser-tools:
-          firefox-version: "142.0.1"
-      - run: ls -la
-      - run: ls -la
+      #- browser-tools/install-browser-tools:
+      #    firefox-version: "142.0.1"
+      #- run: ls -la
+
+      - run: |
+          curl -sL "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" -o firefox.tar.bz2
+          tar -xjf firefox.tar.bz2
+          sudo mv firefox /opt/firefox
+          sudo ln -s /opt/firefox/firefox /usr/bin/firefox
+
       # Testes unitários (Karma) no ChromeHeadless
       - run:
           name: Rodar testes unitários
