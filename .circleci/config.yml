@@ -67,7 +67,7 @@ jobs:
     steps:
 
       - setup_remote_docker:
-          version: 20.10.18
+         # version: 20.10.18
  
       - attach_workspace:
           at: .
