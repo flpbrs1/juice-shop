@@ -33,7 +33,7 @@ jobs:
       - attach_workspace:
           at: .
       - browser-tools/install-browser-tools:
-          firefox-version: "true"
+          firefox-version: "142.0.1"
       - run: ls -la
       - run: ls -la
       # Testes unitários (Karma) no ChromeHeadless
