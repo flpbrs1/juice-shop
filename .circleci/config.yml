@@ -32,7 +32,8 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - browser-tools/install-browser-tools
+      - browser-tools/install-browser-tools:
+          firefox-version: 141.0
       - run: ls -la
       - run: ls -la
       # Testes unitários (Karma) no ChromeHeadless
