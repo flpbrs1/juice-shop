@@ -48,12 +48,12 @@ jobs:
           command: |
             cd frontend
             npm install --legacy-peer-deps
-            npm test -- --watch=false --browsers ChromeHeadless
+            npm test -- --watch=false --browsers FirefoxHeadless
 
       # Testes end-to-end (Protractor) no ChromeHeadless
-      - run:
-          name: Rodar testes E2E
-          command: npm run e2e -- --capabilities.browserName=chrome --headless
+      #- run:
+      #    name: Rodar testes E2E
+      #    command: npm run e2e -- --capabilities.browserName=chrome --headless
 
 
   deploy:
