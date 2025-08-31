@@ -37,7 +37,7 @@ jobs:
       #- run: ls -la
 
       - run: |
-          curl -sL "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US" -o firefox.tar.bz2
+          curl -sL "https://download-installer.cdn.mozilla.net/pub/firefox/releases/142.0.1/linux-x86_64/en-US/firefox-142.0.1.tar.xz" -o firefox.tar.bz2
           tar -xjf firefox.tar.bz2
           sudo mv firefox /opt/firefox
           sudo ln -s /opt/firefox/firefox /usr/bin/firefox
